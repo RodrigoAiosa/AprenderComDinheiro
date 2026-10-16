@@ -12,6 +12,7 @@ Feito em **Python (Flask)** e publicado no **Vercel**.
 | 🔍 **Explorar** | Toca numa nota ou moeda e vê todas as trocas com um só tipo (R$ 2 = 2 × R$ 1 = 4 × 50¢ = 8 × 25¢ = 20 × 10¢ = 40 × 5¢), quantas combinações misturadas existem e vários exemplos. Tocar numa linha lê a frase em voz alta. |
 | 🧺 **Montar valor** | Escolhe um valor e vai colocando notas e moedas no cofrinho até acertar. Mostra quanto falta ou quanto passou. |
 | ⭐ **Desafio** | Perguntas do tipo "Quantas moedas de 25 centavos formam R$ 1?" com placar de acertos. |
+| 🍎 **Para professores** | Em `/atividades`: gera folhas A4 para imprimir (Quantas cabem?, Quanto dinheiro tem aqui?, Quanto falta?, Ligue os valores iguais e Dinheirinho para recortar), em 3 níveis, colorida ou preto e branco, com gabarito. |
 
 Notas: R$ 200, 100, 50, 20, 10, 5, 2 · Moedas: R$ 1, 50¢, 25¢, 10¢, 5¢.
 
@@ -31,6 +32,7 @@ Abra http://127.0.0.1:5000
 ```
 app.py              # rotas Flask (página + API)
 dinheiro.py         # lógica: equivalências, contagem de combinações, troco mínimo
+atividades.py       # gerador das folhas de atividades para professores
 templates/index.html
 public/static/      # CSS e JavaScript (servidos pela CDN do Vercel)
 requirements.txt

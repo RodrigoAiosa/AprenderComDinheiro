@@ -16,6 +16,7 @@
       <button class="aba ativa" data-aba="explorar">🔍 Explorar</button>
       <button class="aba" data-aba="montar">🧺 Montar valor</button>
       <button class="aba" data-aba="desafio">⭐ Desafio</button>
+      <a class="aba" href="/atividades">🍎 Para professores</a>
     </nav>
   </header>
 
@@ -58,7 +59,7 @@
     </section>
   </main>
 
-  <footer>Feito com Python 🐍 para ensinar crianças a contar dinheiro</footer>
+  <footer>Feito com Python 🐍 para ensinar crianças a contar dinheiro · <a href="/atividades">Atividades para imprimir</a></footer>
 
   <script>window.DINHEIRO = {{ dinheiro | tojson }};</script>
   <script src="{{ url_for('static', filename='app.js') }}"></script>

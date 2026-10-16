@@ -54,9 +54,9 @@ function falar(texto) {
 }
 
 // ---------- abas ----------
-document.querySelectorAll(".aba").forEach((b) =>
+document.querySelectorAll(".aba[data-aba]").forEach((b) =>
   b.addEventListener("click", () => {
-    document.querySelectorAll(".aba").forEach((x) => x.classList.toggle("ativa", x === b));
+    document.querySelectorAll(".aba[data-aba]").forEach((x) => x.classList.toggle("ativa", x === b));
     document.querySelectorAll(".painel").forEach((p) => p.classList.toggle("ativo", p.id === b.dataset.aba));
     if (b.dataset.aba === "desafio" && !desafioAtual) novoDesafio();
   })

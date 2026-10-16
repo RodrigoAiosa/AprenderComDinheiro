@@ -3,6 +3,9 @@ import random
 from flask import Flask, jsonify, render_template, request
 
 import dinheiro as d
+from atividades import NIVEIS, TIPOS, gerar_folha
+
+BICHOS = {20000: "🐺", 10000: "🐟", 5000: "🐆", 2000: "🐒", 1000: "🦜", 500: "🪶", 200: "🐢"}
 
 app = Flask(__name__, static_folder="public/static", static_url_path="/static")
 
@@ -10,6 +13,28 @@ app = Flask(__name__, static_folder="public/static", static_url_path="/static")
 @app.get("/")
 def inicio():
     return render_template("index.html", dinheiro=d.DINHEIRO)
+
+
+@app.get("/atividades")
+def atividades():
+    """Área do professor: gera folhas de atividades prontas para imprimir."""
+    args = request.args
+    semente = args.get("folha", type=int)
+    folha = gerar_folha(
+        tipo=args.get("tipo", "quantas"),
+        nivel=args.get("nivel", 1, type=int),
+        quantidade=args.get("quantidade", 8, type=int),
+        semente=semente,
+    )
+    return render_template(
+        "atividades.html",
+        folha=folha,
+        tipos=TIPOS,
+        niveis=NIVEIS,
+        bichos=BICHOS,
+        cores=args.get("cores", "colorido"),
+        gabarito=args.get("gabarito", "sim") == "sim",
+    )
 
 
 @app.get("/api/dinheiro")

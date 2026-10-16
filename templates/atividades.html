@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Atividades para imprimir · Aprender com Dinheiro</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='estilo.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='professor.css') }}">
+</head>
+<body class="{{ 'pb' if cores == 'pb' else '' }}">
+
+{% macro peca(v) -%}
+  {%- if v >= 200 -%}
+    <span class="nota n{{ v // 100 }}"><span>R$ {{ v // 100 }}</span><span class="bicho">{{ bichos[v] }}</span></span>
+  {%- elif v == 100 -%}
+    <span class="moeda m100">1<br>real</span>
+  {%- else -%}
+    <span class="moeda m{{ v }}">{{ v }}<br>cent</span>
+  {%- endif -%}
+{%- endmacro %}
+
+{% macro grupo(lista) -%}
+  <span class="grupo-pecas">{% for v in lista %}{{ peca(v) }}{% endfor %}</span>
+{%- endmacro %}
+
+<!-- ===== Painel do professor (não aparece na impressão) ===== -->
+<header class="nao-imprimir">
+  <a href="/" class="voltar">← Voltar para o jogo</a>
+  <h1>🍎 Área do Professor</h1>
+  <p>Monte uma folha de atividades, confira a prévia e imprima. Cada folha tem um número: use o mesmo número para gerar a mesma folha de novo.</p>
+
+  <form class="painel-prof" method="get" action="/atividades">
+    <label>Atividade
+      <select name="tipo">
+        {% for chave, t in tipos.items() %}
+          <option value="{{ chave }}" {{ 'selected' if chave == folha.tipo }}>{{ t.titulo }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label>Nível
+      <select name="nivel">
+        {% for n, cfg in niveis.items() %}
+          <option value="{{ n }}" {{ 'selected' if n == folha.nivel }}>{{ cfg.nome }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label>Exercícios
+      <select name="quantidade">
+        {% for q in [4, 6, 8, 10, 12] %}
+          <option value="{{ q }}" {{ 'selected' if q == folha.quantidade }}>{{ q }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label>Impressão
+      <select name="cores">
+        <option value="colorido" {{ 'selected' if cores != 'pb' }}>Colorida</option>
+        <option value="pb" {{ 'selected' if cores == 'pb' }}>Preto e branco (para colorir)</option>
+      </select>
+    </label>
+    <label>Gabarito
+      <select name="gabarito">
+        <option value="sim" {{ 'selected' if gabarito }}>Incluir</option>
+        <option value="nao" {{ 'selected' if not gabarito }}>Não incluir</option>
+      </select>
+    </label>
+    <div class="botoes">
+      <button class="botao" type="submit">🎲 Gerar nova folha</button>
+      <button class="botao secundario" type="button" onclick="window.print()">🖨️ Imprimir</button>
+    </div>
+  </form>
+  <p class="dica-prof">Folha nº <strong>{{ folha.semente }}</strong> · No celular, use "Compartilhar → Imprimir" ou "Salvar como PDF".</p>
+</header>
+
+<!-- ===== Folha do aluno ===== -->
+<article class="folha">
+  <div class="cabecalho">
+    <div class="marca">🐷 Aprender com Dinheiro</div>
+    <div class="linhas">
+      <span>Nome: <i></i></span>
+      <span class="curta">Turma: <i></i></span>
+      <span class="curta">Data: <i></i></span>
+    </div>
+  </div>
+  <h2>{{ folha.titulo }}</h2>
+  <p class="instrucao">{{ folha.instrucao }}</p>
+
+  {% if folha.tipo == 'quantas' %}
+    <ol class="lista-ex">
+      {% for it in folha.itens %}
+        <li class="ex">
+          <div class="enunciado">{{ it.texto }} {{ peca(it.alvo) }} ?</div>
+          <div class="resposta-aluno">{{ peca(it.peca) }} × <span class="caixa"></span></div>
+        </li>
+      {% endfor %}
+    </ol>
+
+  {% elif folha.tipo == 'somar' %}
+    <ol class="lista-ex">
+      {% for it in folha.itens %}
+        <li class="ex">
+          <div class="enunciado">{{ grupo(it.pecas) }}</div>
+          <div class="resposta-aluno">Total: R$ <span class="caixa larga"></span></div>
+        </li>
+      {% endfor %}
+    </ol>
+
+  {% elif folha.tipo == 'completar' %}
+    <ol class="lista-ex">
+      {% for it in folha.itens %}
+        <li class="ex">
+          <div class="enunciado">Quero formar {{ peca(it.alvo) }}. Já tenho: {{ grupo(it.pecas) }}</div>
+          <div class="resposta-aluno">Falta: R$ <span class="caixa larga"></span></div>
+        </li>
+      {% endfor %}
+    </ol>
+
+  {% elif folha.tipo == 'ligar' %}
+    <div class="ligar">
+      <div class="coluna">
+        {% for e in folha.itens.esquerda %}
+          <div class="item-ligar"><b>{{ e.numero }}</b>{{ peca(e.alvo) }}<span class="ponto"></span></div>
+        {% endfor %}
+      </div>
+      <div class="coluna">
+        {% for dir in folha.itens.direita %}
+          <div class="item-ligar"><span class="ponto"></span><b>{{ dir.letra }}</b>{{ grupo(dir.grupo) }}</div>
+        {% endfor %}
+      </div>
+    </div>
+
+  {% elif folha.tipo == 'recortar' %}
+    <div class="recorte">
+      {% for v in folha.itens.notas %}<div class="corte">{{ peca(v) }}</div>{% endfor %}
+    </div>
+    <div class="recorte">
+      {% for v in folha.itens.moedas %}<div class="corte redondo">{{ peca(v) }}</div>{% endfor %}
+    </div>
+    <p class="aviso">✂️ Recorte pelas linhas tracejadas. As notas e moedas são ilustrações para estudo e não reproduzem o dinheiro de verdade.</p>
+  {% endif %}
+
+  <footer class="rodape-folha">aprender-com-dinheiro.vercel.app · {{ folha.nivel_nome }} · Folha nº {{ folha.semente }}</footer>
+</article>
+
+<!-- ===== Gabarito ===== -->
+{% if gabarito and folha.tipo != 'recortar' %}
+<article class="folha gabarito">
+  <div class="cabecalho"><div class="marca">🐷 Aprender com Dinheiro · Gabarito do professor</div></div>
+  <h2>Gabarito: {{ folha.titulo }}</h2>
+  <ol class="lista-gab">
+    {% if folha.tipo == 'ligar' %}
+      {% for g in folha.itens.gabarito %}
+        <li>{{ g.numero }} → {{ g.letra }} <small>({{ g.resposta }})</small></li>
+      {% endfor %}
+    {% else %}
+      {% for it in folha.itens %}<li>{{ it.resposta }}</li>{% endfor %}
+    {% endif %}
+  </ol>
+  <footer class="rodape-folha">Folha nº {{ folha.semente }} · {{ folha.nivel_nome }}</footer>
+</article>
+{% endif %}
+
+</body>
+</html>
