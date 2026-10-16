@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Aprender com Dinheiro</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='estilo.css') }}">
+</head>
+<body>
+  <header>
+    <h1>🐷 Aprender com Dinheiro</h1>
+    <p>Descubra quantas moedas e notas cabem em cada valor!</p>
+    <nav>
+      <button class="aba ativa" data-aba="explorar">🔍 Explorar</button>
+      <button class="aba" data-aba="montar">🧺 Montar valor</button>
+      <button class="aba" data-aba="desafio">⭐ Desafio</button>
+    </nav>
+  </header>
+
+  <main>
+    <!-- EXPLORAR -->
+    <section id="explorar" class="painel ativo">
+      <h2>Toque em uma nota ou moeda</h2>
+      <div class="vitrine" id="vitrine-explorar"></div>
+      <div id="resultado-explorar" class="resultado">
+        <p class="dica">Escolha uma nota ou moeda para ver todas as formas de trocar 😊</p>
+      </div>
+    </section>
+
+    <!-- MONTAR -->
+    <section id="montar" class="painel">
+      <h2>Monte <span id="alvo-montar" class="destaque">R$ 2,00</span></h2>
+      <div class="controles">
+        <label>Valor:
+          <select id="select-alvo"></select>
+        </label>
+        <button id="limpar" class="botao secundario">🧹 Esvaziar</button>
+      </div>
+      <div class="vitrine" id="vitrine-montar"></div>
+      <div class="cofre">
+        <div class="cofre-topo">🐷 Seu cofrinho: <strong id="total-montar">R$ 0,00</strong></div>
+        <div id="bandeja" class="bandeja"></div>
+        <div id="barra" class="barra"><div id="barra-preenchida"></div></div>
+        <p id="msg-montar" class="msg"></p>
+      </div>
+    </section>
+
+    <!-- DESAFIO -->
+    <section id="desafio" class="painel">
+      <h2>Quantas cabem?</h2>
+      <div class="placar">Acertos: <strong id="acertos">0</strong> ⭐</div>
+      <div id="pergunta" class="pergunta"></div>
+      <div id="opcoes" class="opcoes"></div>
+      <p id="msg-desafio" class="msg"></p>
+      <button id="proximo" class="botao" hidden>Próximo desafio ➜</button>
+    </section>
+  </main>
+
+  <footer>Feito com Python 🐍 para ensinar crianças a contar dinheiro</footer>
+
+  <script>window.DINHEIRO = {{ dinheiro | tojson }};</script>
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
