@@ -154,7 +154,9 @@ def _recortar(rng, nivel, qtd):
     # quantidade de cada peça pensada para caber numa folha A4
     notas = [p for p in pecas if p >= 200]
     moedas = [p for p in pecas if p < 200]
-    return {"notas": [p for p in notas for _ in range(4)], "moedas": [p for p in moedas for _ in range(8)]}
+    por_nota = 4 if len(notas) <= 3 else 3
+    por_moeda = 8 if len(moedas) <= 3 else 5
+    return {"notas": [p for p in notas for _ in range(por_nota)], "moedas": [p for p in moedas for _ in range(por_moeda)]}
 
 
 GERADORES = {

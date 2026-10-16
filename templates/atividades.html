@@ -74,7 +74,7 @@
 </header>
 
 <!-- ===== Folha do aluno ===== -->
-<article class="folha">
+<div class="moldura"><article class="folha">
   <div class="cabecalho">
     <div class="marca">🐷 Aprender com Dinheiro</div>
     <div class="linhas">
@@ -86,6 +86,7 @@
   <h2>{{ folha.titulo }}</h2>
   <p class="instrucao">{{ folha.instrucao }}</p>
 
+  <div class="corpo"><div class="encaixe">
   {% if folha.tipo == 'quantas' %}
     <ol class="lista-ex">
       {% for it in folha.itens %}
@@ -139,15 +140,17 @@
     </div>
     <p class="aviso">✂️ Recorte pelas linhas tracejadas. As notas e moedas são ilustrações para estudo e não reproduzem o dinheiro de verdade.</p>
   {% endif %}
+  </div></div>
 
   <footer class="rodape-folha">aprender-com-dinheiro.vercel.app · {{ folha.nivel_nome }} · Folha nº {{ folha.semente }}</footer>
-</article>
+</article></div>
 
 <!-- ===== Gabarito ===== -->
 {% if gabarito and folha.tipo != 'recortar' %}
-<article class="folha gabarito">
+<div class="moldura"><article class="folha gabarito">
   <div class="cabecalho"><div class="marca">🐷 Aprender com Dinheiro · Gabarito do professor</div></div>
   <h2>Gabarito: {{ folha.titulo }}</h2>
+  <div class="corpo"><div class="encaixe">
   <ol class="lista-gab">
     {% if folha.tipo == 'ligar' %}
       {% for g in folha.itens.gabarito %}
@@ -157,9 +160,45 @@
       {% for it in folha.itens %}<li>{{ it.resposta }}</li>{% endfor %}
     {% endif %}
   </ol>
+  </div></div>
   <footer class="rodape-folha">Folha nº {{ folha.semente }} · {{ folha.nivel_nome }}</footer>
-</article>
+</article></div>
 {% endif %}
 
+<script>
+// Faz cada folha caber numa página A4: se o conteúdo for maior que o espaço,
+// ele é reduzido proporcionalmente (nunca cortado).
+function encaixarFolhas() {
+  document.querySelectorAll(".folha").forEach((folha) => {
+    const corpo = folha.querySelector(".corpo");
+    const caixa = folha.querySelector(".encaixe");
+    if (!corpo || !caixa) return;
+    let escala = 1;
+    for (let i = 0; i < 6; i++) {
+      caixa.style.transform = escala < 1 ? `scale(${escala})` : "";
+      caixa.style.width = escala < 1 ? `${100 / escala}%` : "";
+      const alto = caixa.scrollHeight * escala;
+      const disponivel = corpo.clientHeight;
+      if (alto <= disponivel + 1) break;
+      escala = Math.max(0.35, escala * (disponivel / alto) * 0.98);
+    }
+  });
+  ajustarPrevia();
+}
+// No celular a folha A4 é mostrada em miniatura (a impressão continua em A4).
+function ajustarPrevia() {
+  document.querySelectorAll(".moldura").forEach((m) => {
+    const folha = m.firstElementChild;
+    const s = Math.min(1, (m.clientWidth) / folha.offsetWidth);
+    folha.style.transform = s < 1 ? `scale(${s})` : "";
+    m.style.height = s < 1 ? `${folha.offsetHeight * s + 16}px` : "";
+  });
+}
+window.addEventListener("load", encaixarFolhas);
+window.addEventListener("resize", ajustarPrevia);
+window.addEventListener("beforeprint", encaixarFolhas);
+if (document.fonts) document.fonts.ready.then(encaixarFolhas);
+encaixarFolhas();
+</script>
 </body>
 </html>
